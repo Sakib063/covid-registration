@@ -10,17 +10,19 @@ class CenterAppointmentService{
     public function appoint(){
         $day=Carbon::now()->dayOfWeek;
         $date=null;
-        if($day==Carbon::FRIDAY||$day==Carbon::SATURDAY){
+        if($day==Carbon::FRIDAY||$day==Carbon::SATURDAY||$day==Carbon::THURSDAY){
             $date=Carbon::parse('next sunday');
         }
         else{
-            $date=Carbon::today();
+            $date=Carbon::tomorrow();
         }
-        $user=(new User())->next_user();
-        $limit=(new Center())->capacity($user->vaccine_center);
-        if($limit){
-            (new User())->appointment($date,$user);
-            (new Center())->appoint_patients($user->vaccine_center);
+        $users=(new User())->next_user();
+        foreach($users as $user){
+            $limit=(new Center())->capacity($user->vaccine_center);
+            if($limit){
+                (new User())->appointment($date,$user);
+                (new Center())->appoint_patients($user->vaccine_center);
+            }
         }
     }
 }

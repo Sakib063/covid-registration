@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WelcomeController;
+use App\Services\CenterAppointmentService;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CenterController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
@@ -16,5 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/remove',[\App\Models\Center::class,'remove_patient']);
+Route::get('/test',[WelcomeController::class,'test']);
 
 require __DIR__.'/auth.php';

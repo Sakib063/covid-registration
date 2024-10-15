@@ -16,10 +16,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    protected $center_service;
-    public function __construct(CenterAppointmentService $center_service){
-        $this->center_service=$center_service;
-    }
     /**
      * Display the registration view.
      */
@@ -38,7 +34,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'vaccine_center'=>['required','string'],
-            'nid'=>['required','string'],
+            'nid'=>['required','string','unique:'.User::class],
+            'phone'=>['required','string','unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -47,11 +44,12 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'vaccine_center'=>$request->vaccine_center,
             'nid'=>$request->nid,
+            'phone'=>$request->phone,
             'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));
-        $this->center_service->appoint();
+        (new CenterAppointmentService())->appoint();
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

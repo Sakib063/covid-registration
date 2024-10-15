@@ -75,10 +75,16 @@ class User extends Authenticatable
     }
 
     public function next_user(){
-        return self::query()->where('status',self::NOT_SCHEDULED)->latest()->first();
+        return self::query()->where('status',self::NOT_SCHEDULED)->orderByDesc('created_at')->get();
     }
 
     public function appointment($date,User $user): void{
         self::query()->where('id',$user->id)->update(['status'=>self::SCHEDULED,'appointment_date'=>$date]);
+    }
+
+    public function vaccinated_users(){
+        $query=self::query()->where('status',self::SCHEDULED)->where('appointment_date',Carbon::today())->get();
+        self::query()->whereIn('id',$query->pluck('id'))->update(['status'=>self::VACCINATED]);
+        return $query;
     }
 }

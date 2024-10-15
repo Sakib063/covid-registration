@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\WelcomeController;
+use App\Mail\NotificationMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Mail;
 
 class Center extends Model
 {
@@ -25,7 +28,12 @@ class Center extends Model
         self::query()->where('id',$id)->increment('patients');
     }
 
-    public function remove_patient(int $id): void{
-        self::query()->where('id',$id)->decrement('patients');
+    public function remove_patient(){
+        $users=(new User())->vaccinated_users();
+        $vaccine_centers=$users->pluck('vaccine_center')->toArray();
+        foreach($users as $user){
+            Mail::to($user->email)->send(new NotificationMail(['name'=>$user->name,'vaccine_center'=>$user->vaccine_center]));
+        }
+        self::query()->whereIn('id',$vaccine_centers)->where('patients','>',0)->decrement('patients');
     }
 }
