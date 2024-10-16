@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('nid')->unique();
+            $table->string('nid')->unique()->index();
             $table->string('phone')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->string('password');
-            $table->unsignedBigInteger('vaccine_center');
+            $table->unsignedBigInteger('vaccine_center')->index();
             $table->date('appointment_date')->nullable();
             $table->rememberToken();
             $table->timestamps();
