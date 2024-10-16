@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\WelcomeController;
 use App\Mail\NotificationMail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +31,7 @@ class Center extends Model
         $users=(new User())->vaccinated_users();
         $vaccine_centers=$users->pluck('vaccine_center')->toArray();
         foreach($users as $user){
-            Mail::to($user->email)->send(new NotificationMail(['name'=>$user->name,'vaccine_center'=>$user->vaccine_center]));
+            Mail::to($user->email)->send(new NotificationMail(['name'=>$user->name]));
         }
         self::query()->whereIn('id',$vaccine_centers)->where('patients','>',0)->decrement('patients');
     }

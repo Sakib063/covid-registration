@@ -9,4 +9,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-Schedule::command(AppointmentScheduler::class)->everyFiveSeconds();
+Schedule::command(AppointmentScheduler::class)->dailyAt('21:00')->when(function(){
+                                                            $day=now()->dayOfWeek;
+                                                            return !in_array($day,[5, 6]);
+                                                        });
